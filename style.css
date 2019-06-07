@@ -1,0 +1,30 @@
+table {
+  display: block;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 40px;
+  border-collapse: collapse;
+  border: solid 2px black;
+}
+
+td {
+  height: 5px;
+  width: 5px;
+  text-align: center;
+  border: solid 1px black;
+  z-index: 99;
+}
+
+.cell-index {
+  display: block;
+  right: 2px;
+  top: 2px;
+  font-size: 0.50em;
+  color: #707070;
+}
+
+.cell-data {
+  display: inline-block;
+  color: #707070;
+}
