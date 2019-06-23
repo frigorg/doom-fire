@@ -2,20 +2,22 @@ const fireColorsPalette = [{"r":7,"g":7,"b":7},{"r":31,"g":7,"b":7},{"r":47,"g":
 
 const debug = false;
 
-const pixelsWidth = 50;
-const pixelsHeight = 20;
-const totalPixels = pixelsWidth * pixelsHeight;
-const firePixelsArray = new Array();
-let decay = 1;
+const pixelsQuantityWidth = 30;
+const pixelsQuantityHeight = 30;
+const totalPixels = pixelsQuantityWidth * pixelsQuantityHeight;
+const fireIntensityArray = new Array();
+const decayFactor = 5;
+const windFactor = 3; // 0 : no wind
+const windDirection = "left"; // left | right
 
 for (let i = 0; i < totalPixels ; i++)
-firePixelsArray[i] = 0;
+fireIntensityArray[i] = 0;
 
 function renderGrid() {
   let html = "<table>";
   html += "<tr>";
 
-  firePixelsArray.forEach((cell, index) => {
+  fireIntensityArray.forEach((cell, index) => {
     if (debug){
       html += '<td>';
       html += `<div class="cell-data"> ${cell} </div>`;
@@ -25,9 +27,9 @@ function renderGrid() {
       html += `<td style="background-color: ${bgColor};">`;
     }
     html += "</td>";
-    if ((index+1) % pixelsWidth === 0){
+    if ((index+1) % pixelsQuantityWidth === 0){
       html += "</tr>";
-      if (index % pixelsWidth === 0)
+      if (index % pixelsQuantityWidth === 0)
         html += "<tr>";  
     }
   });
@@ -37,39 +39,28 @@ function renderGrid() {
 }
 
 function generateFireSource(){
-  for (let i = totalPixels - pixelsWidth; i < totalPixels; i++){
-    firePixelsArray[i] = 36;
+  for (let i = totalPixels - pixelsQuantityWidth; i < totalPixels; i++){
+    fireIntensityArray[i] = 36;
   }
 }
 
-
-// PRIMEIRA TENTATIVA FRUSTRADA
-
-// function firePropagation() {
-//   for (let i = 0; i < (totalPixels - pixelsWidth); i++){
-//     if (firePixelsArray[i+pixelsHeight] > 0){
-//       decay = Math.floor(Math.random()*3);
-//       firePixelsArray[i] = firePixelsArray[i+pixelsHeight] - decay;
-//       if (firePixelsArray[i] < 0)
-//       firePixelsArray[i] = 0;
-//     }
-//   }
-//     renderGrid();
-// }
-
+let position;
+let decay;
+let windSpeed;
 function firePropagation() {
-  for(let xIndex = 0; xIndex < pixelsHeight; xIndex++){
-    for(let yIndex = 0; yIndex < pixelsWidth; yIndex++){
-      let position = (xIndex * pixelsHeight) + yIndex;
-      if ((position) < (totalPixels - pixelsWidth)){
-        decay = Math.floor(Math.random()*3);
-        firePixelsArray[position] = firePixelsArray[position + pixelsHeight] - decay;
-        if (firePixelsArray[position] < 0)
-        firePixelsArray[position] = 0;
+  for(let xIndex = 0; xIndex < pixelsQuantityWidth; xIndex++){
+    for(let yIndex = 0; yIndex < pixelsQuantityHeight; yIndex++){
+      position = yIndex * pixelsQuantityHeight + xIndex;
+      if (position < (totalPixels - pixelsQuantityWidth)){
+        decay = Math.floor(Math.random() * decayFactor);
+        windSpeed = Math.floor(Math.random() * Math.abs(windFactor));
+        if (windDirection === "right")
+          windSpeed *= -1;
+        fireIntensityArray[Math.min((position - windSpeed), (totalPixels - pixelsQuantityWidth)-1)] = Math.max(0, fireIntensityArray[position + pixelsQuantityHeight] - decay);
       }
     }
   }
-    renderGrid();
+  renderGrid();
 }
 
 function start() {
